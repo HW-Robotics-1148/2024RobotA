@@ -1,0 +1,16 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/SmartDashboard/Auto Chooser": "String Chooser",
+      "/Shuffleboard/SmartDashboard/Field": "Field2d",
+      "/Shuffleboard/SmartDashboard/Reverse Shooter": "Command",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Flip FOC": "Command",
+      "/SmartDashboard/Reset FOC": "Command"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "NetworkTables": {
+    "retained": {
+      "limelight-a": {
+        "double[]##v_/limelight-a/botpose_wpiblue": {
+          "open": true
+        },
+        "double[]##v_/limelight-a/targetpose_cameraspace": {
+          "open": true
+        },
+        "double[]##v_/limelight-a/targetpose_robotspace": {
+          "open": true
+        },
+        "double[]##v_/limelight-a/tc": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/SmartDashboard/Auto Chooser": "String Chooser",
+      "/Shuffleboard/SmartDashboard/Field": "Field2d",
+      "/Shuffleboard/SmartDashboard/Reverse Shooter": "Command",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Reset FOC": "Command"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "1148"
+  }
+}
