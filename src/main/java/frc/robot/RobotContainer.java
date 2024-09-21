@@ -26,6 +26,7 @@ import frc.lib.util.BetterPS4;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.Vision.PoseEstimator;
+import frc.robot.team696.LED;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -50,6 +51,7 @@ public class RobotContainer {
     public final PoseEstimator estimator = new PoseEstimator(s_Swerve);
     private final AutoAim autoAim = new AutoAim(s_Swerve, estimator);
     private final DriverCamera driverCamera = new DriverCamera();
+    public final LEDLights lights = new LEDLights(1);
 
     /* Driver Buttons */
     private final JoystickButton moveElevator = new JoystickButton(driver, PS4Controller.Button.kL1.value);
@@ -71,6 +73,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        LED.get();
         s_Swerve.setDefaultCommand(
                 new TeleopSwerve(
                         s_Swerve,

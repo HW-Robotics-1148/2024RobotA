@@ -164,13 +164,13 @@ public class RobotMap {
 
   public static class PoseConfig {
     // Increase these numbers to trust your model's state estimates less.
-    public static final double kPositionStdDevX = 0.1;
-    public static final double kPositionStdDevY = 0.1;
+    public static final double kPositionStdDevX = 0.7;
+    public static final double kPositionStdDevY = 0.7;
     public static final double kPositionStdDevTheta = 10;
 
     // Increase these numbers to trust global measurements from vision less.
-    public static final double kVisionStdDevX = 0.5;
-    public static final double kVisionStdDevY = 0.5;
+    public static final double kVisionStdDevX = 0.1;
+    public static final double kVisionStdDevY = 0.1;
     public static final double kVisionStdDevTheta = 500;
   }
 
