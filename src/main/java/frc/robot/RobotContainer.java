@@ -51,7 +51,7 @@ public class RobotContainer {
     public final PoseEstimator estimator = new PoseEstimator(s_Swerve);
     private final AutoAim autoAim = new AutoAim(s_Swerve, estimator);
     private final DriverCamera driverCamera = new DriverCamera();
-    public final LEDLights lights = new LEDLights(1);
+    // public final LED candle = LED.get();
 
     /* Driver Buttons */
     private final JoystickButton moveElevator = new JoystickButton(driver, PS4Controller.Button.kL1.value);
@@ -73,7 +73,7 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        LED.get();
+        LED.get().Color(255, 0, 0);
         s_Swerve.setDefaultCommand(
                 new TeleopSwerve(
                         s_Swerve,
@@ -96,6 +96,7 @@ public class RobotContainer {
 
         Shuffleboard.getTab("SmartDashboard").add("Auto Chooser", Constants.AutoConstants.getAutoSelector());
         SmartDashboard.putBoolean("Field-Oriented Control", true);
+        SmartDashboard.putBoolean("Limelight Status", true);
         SmartDashboard.putData("Reset FOC", new Command() {
             @Override
             public void initialize() {
@@ -151,6 +152,9 @@ public class RobotContainer {
         intakeButton.whileTrue(new Command() {
             @Override
             public void execute() {
+                if (!elevator.isDown()) {
+                    carriage.outTake();
+                }
                 if (carriage.hasNote()) {
 
                 } else if (!carriage.hasNote() && elevator.isDown()) {
@@ -242,6 +246,8 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+        s_Swerve.setStartingPos(PathPlannerAuto
+                .getStaringPoseFromAutoFile(Constants.AutoConstants.getAutoSelector().getSelected()));
         return new PathPlannerAuto(Constants.AutoConstants.getAutoSelector().getSelected());
     }
 

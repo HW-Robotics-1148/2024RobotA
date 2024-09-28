@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Vision;
 
+import com.pathplanner.lib.util.PathPlannerLogging;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -20,7 +22,7 @@ import frc.robot.Constants;
 public class PoseEstimator extends SubsystemBase {
 
   // PoseConfig config;
-    Field2d field = new Field2d();
+  public Field2d field = Constants.Swerve.field;
 
   private Pose2d estimatePose = new Pose2d();
 
@@ -54,13 +56,16 @@ public class PoseEstimator extends SubsystemBase {
   public void periodic() {
     updateOdometryEstimate();
 
-    cam.updateEstimator(drivetrain.getGyroYaw().getDegrees(), poseEstimator, ()->{return true;});
+    cam.updateEstimator(drivetrain.getGyroYaw().getDegrees(), poseEstimator, () -> {
+      return true;
+    });
 
     field.setRobotPose(getPose());
+    PathPlannerLogging.setLogActivePathCallback(
+        (poses) -> field.getObject(Constants.AutoConstants.getAutoSelector().getSelected()).setPoses(poses));
 
     SmartDashboard.putData(field);
   }
-
 
   /** Updates the field relative position of the robot. */
   public void updateOdometryEstimate() {
@@ -80,7 +85,7 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   public void setPose(Pose2d newPose) {
-    poseEstimator.resetPosition(drivetrain.getGyroYaw(),drivetrain.getModulePositions(), newPose);
+    poseEstimator.resetPosition(drivetrain.getGyroYaw(), drivetrain.getModulePositions(), newPose);
   }
 
   /**
@@ -183,6 +188,5 @@ public class PoseEstimator extends SubsystemBase {
    * @return a command to reset the Pose Estimator and Drivetrain to the vision
    *         pose
    */
-
 
 }

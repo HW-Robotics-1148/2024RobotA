@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.Components.Carriage;
 import frc.Components.Elevator;
@@ -31,6 +32,7 @@ public final class Constants {
                 public static final int pigeonID = 18;
                 public static final String shooterLimeLightID = "limelight-a";
                 public static final String intakeLimeLightID = "limelight-b";
+                public static final Field2d field = new Field2d();
 
                 public static final COTSTalonFXSwerveConstants chosenModule = // TODO: This must be tuned to specific
                                                                               // robot
@@ -74,8 +76,8 @@ public final class Constants {
                 public static final double angleCurrentThresholdTime = 0.1;
                 public static final boolean angleEnableCurrentLimit = true;
 
-                public static final int driveCurrentLimit = 75;
-                public static final int driveCurrentThreshold = 70;
+                public static final int driveCurrentLimit = 45;
+                public static final int driveCurrentThreshold = 90;
                 public static final double driveCurrentThresholdTime = 0.1;
                 public static final boolean driveEnableCurrentLimit = true;
 
@@ -95,7 +97,7 @@ public final class Constants {
                 /* Drive Motor PID Values */
                 public static final double driveKP = 69.420; // TODO: This must be tuned to specific robot
                 public static final double driveKI = 0.0;
-                public static final double driveKD = 0.04;
+                public static final double driveKD = 0.00;
                 public static final double driveKF = 0.0;
 
                 /* Drive Motor Characterization Values From SYSID */
@@ -187,6 +189,15 @@ public final class Constants {
                 private static ReplanningConfig replanningConfig = new ReplanningConfig();
                 private static PDConstant autoAimPDConstants = new PDConstant(0.6, 0.0);
                 private static SendableChooser<String> autoChooser = new SendableChooser<String>();
+                private static boolean limelightStatus = true;
+
+                public static boolean isLimelightStatus() {
+                        return limelightStatus;
+                }
+
+                public static void setLimelightStatus(boolean limelightStatus) {
+                        AutoConstants.limelightStatus = limelightStatus;
+                }
 
                 public static void initializeAutonomous(TalonFX intake, Elevator elevator, Shooter shooter,
                                 Carriage carriage, frc.robot.subsystems.Swerve drive) {

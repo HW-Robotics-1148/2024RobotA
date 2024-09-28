@@ -93,11 +93,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    m_robotContainer.s_Swerve.field.setRobotPose(
-        PathPlannerAuto.getStaringPoseFromAutoFile(Constants.AutoConstants.getAutoSelector().getSelected()));
-    PathPlannerLogging
-        .setLogActivePathCallback((poses) -> m_robotContainer.s_Swerve.field.getObject("path").setPoses(poses));
-
   }
 
   @Override
@@ -107,12 +102,12 @@ public class Robot extends TimedRobot {
     if (m_robotContainer.carriage != null) {
       m_robotContainer.carriage.removeDefaultCommand();
     }
-    m_robotContainer.s_Swerve.setCoastMode();
+    m_robotContainer.s_Swerve.setBrakeMode();
   }
 
   @Override
   public void teleopExit() {
-    m_robotContainer.s_Swerve.setBrakeMode();
+    m_robotContainer.s_Swerve.setCoastMode();
   }
 
   /** This function is called periodically during autonomous. */
@@ -135,9 +130,7 @@ public class Robot extends TimedRobot {
     // m_robotContainer.shooter.toggleSpinning();
     // }
     // i}
-    if (!FieldData.getMatchType().equals("Qualification") || !FieldData.getMatchType().equals("Elimination")) {
-      m_robotContainer.s_Swerve.setCoastMode();
-    }
+    m_robotContainer.s_Swerve.setCoastMode();
     // m_robotContainer.s_Swerve.setCoastMode();
     // if (FieldData.getIsRed()) {
     // m_robotContainer.s_Swerve

@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
 public abstract class BaseCam {
     public class AprilTagResult {
@@ -38,18 +40,22 @@ public abstract class BaseCam {
     Vector<N3> stdDeviations = VecBuilder.fill(0.7, 0.7, 2);
 
     public void setStdDeviations(double x, double y, double r) {
-        stdDeviations = VecBuilder.fill(x,y,r);
+        stdDeviations = VecBuilder.fill(x, y, r);
     }
 
-    /* checkEstimation Used to filter out unwanted results, can use cam.latestResult to filter 
+    /*
+     * checkEstimation Used to filter out unwanted results, can use cam.latestResult
+     * to filter
      * 
-     * example usage: testCam.updateEstimator(m_poseEstimator, ()->{ if (testCam.latestResult.distToTag > 2) return false; return true;});
+     * example usage: testCam.updateEstimator(m_poseEstimator, ()->{ if
+     * (testCam.latestResult.distToTag > 2) return false; return true;});
      * 
-    */
-    public boolean updateEstimator(double curYaw, SwerveDrivePoseEstimator estimator, Callable<Boolean> checkEstimation) {
+     */
+    public boolean updateEstimator(double curYaw, SwerveDrivePoseEstimator estimator,
+            Callable<Boolean> checkEstimation) {
         Optional<AprilTagResult> oEstimation = this.getEstimate(curYaw);
-        
-        if(oEstimation.isPresent()) {
+
+        if (oEstimation.isPresent()) {
             this.latestResult = oEstimation.get();
             System.out.println(this.latestResult.pose);
             try {
@@ -59,47 +65,57 @@ public abstract class BaseCam {
             } catch (Exception e) {
 
             }
-            estimator.setVisionMeasurementStdDevs(stdDeviations);
-            estimator.addVisionMeasurement(
-                this.latestResult.pose,
-                this.latestResult.time);
-            return true;
+            Constants.AutoConstants.setLimelightStatus(SmartDashboard.getBoolean("Limelight Status", true));
+            if (Constants.AutoConstants.isLimelightStatus()) {
+                estimator.setVisionMeasurementStdDevs(stdDeviations);
+                estimator.addVisionMeasurement(
+                        this.latestResult.pose,
+                        this.latestResult.time);
+                return true;
+            }
         }
         return false;
     }
 
-    public boolean updateEstimator(double curYaw, SwerveDrivePoseEstimator estimator) { // default behavior of cutting off bad readings, a lot to fix, don't care
-        return updateEstimator(curYaw, estimator, ()-> {
-            if (this.latestResult.ambiguity > 0.17) return false; // Too Ambiguous, Ignore
-               /*  if (Math.abs(vel.omegaRadiansPerSecond) > 1.5) return; // Rotating too fast, ignore
-                if (
-                    Math.sqrt(
-                        vel.vxMetersPerSecond * vel.vxMetersPerSecond + vel.vyMetersPerSecond * vel.vyMetersPerSecond
-                    ) >
-                    Constants.swerve.maxSpeed * 0.6
-                ) return; // Moving Too fast, ignore*/
-                double deviationRatio;
-                if (this.latestResult.ambiguity < 1 / 100.0) {
-                    deviationRatio = 1 / 100.0; // Tag estimation very good -> Use it
-                } else {
-                    deviationRatio = Math.pow(
+    public boolean updateEstimator(double curYaw, SwerveDrivePoseEstimator estimator) { // default behavior of cutting
+                                                                                        // off bad readings, a lot to
+                                                                                        // fix, don't care
+        return updateEstimator(curYaw, estimator, () -> {
+            if (this.latestResult.ambiguity > 0.17)
+                return false; // Too Ambiguous, Ignore
+            /*
+             * if (Math.abs(vel.omegaRadiansPerSecond) > 1.5) return; // Rotating too fast,
+             * ignore
+             * if (
+             * Math.sqrt(
+             * vel.vxMetersPerSecond * vel.vxMetersPerSecond + vel.vyMetersPerSecond *
+             * vel.vyMetersPerSecond
+             * ) >
+             * Constants.swerve.maxSpeed * 0.6
+             * ) return; // Moving Too fast, ignore
+             */
+            double deviationRatio;
+            if (this.latestResult.ambiguity < 1 / 100.0) {
+                deviationRatio = 1 / 100.0; // Tag estimation very good -> Use it
+            } else {
+                deviationRatio = Math.pow(
                         this.latestResult.distToTag,
-                        2
-                    ) /
-                    2; // Trust Less With Distance
-                }
-                if(DriverStation.isAutonomousEnabled()) {
-                    if (this.latestResult.distToTag > 4.) return false; // Tag Too far, Ignore --> comment for know becuase deviation ratio sort of fixes this.
-                
-                    deviationRatio *= 2;
-                }
-                Matrix<N3, N1> deviation = VecBuilder.fill(
+                        2) /
+                        2; // Trust Less With Distance
+            }
+            if (DriverStation.isAutonomousEnabled()) {
+                if (this.latestResult.distToTag > 4)
+                    return false; // Tag Too far, Ignore --> comment for know becuase deviation ratio sort of
+                                  // fixes this.
+
+                deviationRatio *= 2;
+            }
+            Matrix<N3, N1> deviation = VecBuilder.fill(
                     deviationRatio,
                     deviationRatio,
-                    2 * deviationRatio
-                );
-                estimator.setVisionMeasurementStdDevs(deviation);
-                return true;
+                    2 * deviationRatio);
+            estimator.setVisionMeasurementStdDevs(deviation);
+            return true;
         });
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -33,16 +35,18 @@ import frc.lib.math.AngleMath;
 public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Imu gyro;
-    public Field2d field = new Field2d();
+    public Pose2d startPos;
+
+    public void setStartingPos(Pose2d startPos) {
+        this.startPos = startPos;
+    }
 
     public Swerve() {
+        startPos = new Pose2d();
+        PathPlannerLogging
+                .setLogActivePathCallback(
+                        (poses) -> Constants.Swerve.field.getObject("path").setPoses(poses));
         gyro = new Imu(Constants.Swerve.pigeonID);
-        limeLight = new LimeLight(Constants.Swerve.shooterLimeLightID);
-        // gyro.setYaw(0);
-
-        field.setRobotPose(new Pose2d(new Translation2d(0, 0), new Rotation2d(0)));
-        PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
-        Shuffleboard.getTab("SmartDashboard").add(field);
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -141,24 +145,29 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    private LimeLight limeLight;
-
     @Override
     public void periodic() {
+        if (DriverStation.isDisabled() && PathPlannerAuto
+                .getStaringPoseFromAutoFile(Constants.AutoConstants.getAutoSelector().getSelected()) != startPos) {
+            startPos = PathPlannerAuto
+                    .getStaringPoseFromAutoFile(Constants.AutoConstants.getAutoSelector().getSelected());
+            Constants.Swerve.field.setRobotPose(startPos);
+        }
+        SmartDashboard.putData(Constants.Swerve.field);
         // poseEstimator.update(getGyroYaw(), getModulePositions());
         SmartDashboard.putNumber("Robot Heading", getGyroYaw().getDegrees());
         SmartDashboard.putNumber("Robot Velocity",
                 Math.hypot(getRobotVelocity().vxMetersPerSecond, getRobotVelocity().vyMetersPerSecond));
 
-        }
-        // if (FieldData.getIsTeleop()) {
-        // if (limeLight.botPoseChanged()) {
-        // if (limeLight.getPose().getTranslation()
-        // .getDistance(poseEstimator.getEstimatedPosition().getTranslation()) <= 1
-        // || AngleMath.getDelta(limeLight.getRobotYaw(),
-        // poseEstimator.getEstimatedPosition().getRotation().getDegrees()) >= 8)
-        // poseEstimator.addVisionMeasurement(limeLight.getPose(),
-        // limeLight.getLastReceiveTime());
-        // }
-        // }
     }
+    // if (FieldData.getIsTeleop()) {
+    // if (limeLight.botPoseChanged()) {
+    // if (limeLight.getPose().getTranslation()
+    // .getDistance(poseEstimator.getEstimatedPosition().getTranslation()) <= 1
+    // || AngleMath.getDelta(limeLight.getRobotYaw(),
+    // poseEstimator.getEstimatedPosition().getRotation().getDegrees()) >= 8)
+    // poseEstimator.addVisionMeasurement(limeLight.getPose(),
+    // limeLight.getLastReceiveTime());
+    // }
+    // }
+}

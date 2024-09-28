@@ -83,37 +83,41 @@ public class FieldPositioning extends SubsystemBase implements PositioningSystem
 
     @Override
     public void periodic() {
-        Position lastPosition = positionHistory.getFirst();
-        final double currentAngle = lastPosition.angle + imu.getYawDeltaThisTick();
-        positionHistory.add(0, new Position(
-                currentAngle,
-                lastPosition.position.add(new Vector2(0, 0))));// todo Changed to empty vector until further
-                                                               // implementation
+        // Position lastPosition = positionHistory.getFirst();
+        // final double currentAngle = lastPosition.angle + imu.getYawDeltaThisTick();
+        // positionHistory.add(0, new Position(
+        // currentAngle,
+        // lastPosition.position.add(new Vector2(0, 0))));// todo Changed to empty
+        // vector until further
+        // // implementation
 
-        // makes sure position history doesn't get too long
-        if (positionHistory.size() > 5 / 0.02) {
-            positionHistory.removeLast();
-        }
+        // // makes sure position history doesn't get too long
+        // if (positionHistory.size() > 5 / 0.02) {
+        // positionHistory.removeLast();
+        // }
 
-        if (isRationalLimelightFrame()) {
-            hasGottenLimeLightFrame = true;
-            final double timeSinceLastFrame = Time.getTimeSincePower() - lastLimelightFrameTime;
-            lastLimelightFrameTime = Time.getTimeSincePower();
-            final Position limelightPositionAtFrame = limeLight.getRobotPosition();
-            Position predictedPositionAtFrame = predictedPositionAtLastLimelightFrame();
-            if (predictedPositionAtFrame == null)
-                predictedPositionAtFrame = positionHistory.getFirst();
+        // if (isRationalLimelightFrame()) {
+        // hasGottenLimeLightFrame = true;
+        // final double timeSinceLastFrame = Time.getTimeSincePower() -
+        // lastLimelightFrameTime;
+        // lastLimelightFrameTime = Time.getTimeSincePower();
+        // final Position limelightPositionAtFrame = limeLight.getRobotPosition();
+        // Position predictedPositionAtFrame = predictedPositionAtLastLimelightFrame();
+        // if (predictedPositionAtFrame == null)
+        // predictedPositionAtFrame = positionHistory.getFirst();
 
-            Position adjustedPosition;
-            // if the time since the last reading is more than 20 ms, we scrub the
-            // extrapolated position from the drive
-            if (timeSinceLastFrame < 20) {
-                adjustedPosition = limelightPositionAtFrame.combine(predictedPositionAtFrame, 0.5);
-            } else {
-                adjustedPosition = limelightPositionAtFrame;
-            }
-            Position offsetPosition = adjustedPosition.difference(predictedPositionAtFrame);
-            positionHistory.replaceAll(e -> e.add(offsetPosition));
-        }
+        // Position adjustedPosition;
+        // // if the time since the last reading is more than 20 ms, we scrub the
+        // // extrapolated position from the drive
+        // if (timeSinceLastFrame < 20) {
+        // adjustedPosition = limelightPositionAtFrame.combine(predictedPositionAtFrame,
+        // 0.5);
+        // } else {
+        // adjustedPosition = limelightPositionAtFrame;
+        // }
+        // Position offsetPosition =
+        // adjustedPosition.difference(predictedPositionAtFrame);
+        // positionHistory.replaceAll(e -> e.add(offsetPosition));
+        // }
     }
 }

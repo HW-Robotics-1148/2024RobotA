@@ -13,6 +13,7 @@ import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,8 +24,8 @@ public class LED extends SubsystemBase {
 
     private CANdle _candle;
 
-    private final int _ledOffset = 8;
-    private final int _numLed = 36 + 8;
+    private final int _ledOffset = 0;
+    private final int _numLed = 300;
 
     public static LED get() {
         if (_LED == null) {
@@ -35,15 +36,16 @@ public class LED extends SubsystemBase {
     }
 
     private LED() {
-        _candle = new CANdle(0);
+        _candle = new CANdle(30, "drive");
         _candle.configFactoryDefault();
 
-        CANdleConfiguration _candleConfiguration = new CANdleConfiguration(); // Only here because phoenix v5 shitty
+        CANdleConfiguration _candleConfiguration = new CANdleConfiguration(); // Only
+        // here because phoenix v5 shitty
 
         _candleConfiguration.statusLedOffWhenActive = true;
         _candleConfiguration.disableWhenLOS = false;
         _candleConfiguration.stripType = LEDStripType.RGB;
-        _candleConfiguration.brightnessScalar = 1;
+        _candleConfiguration.brightnessScalar = 1.0;
         _candleConfiguration.vBatOutputMode = VBatOutputMode.On;
         _candleConfiguration.enableOptimizations = true;
         _candleConfiguration.v5Enabled = true;
@@ -52,15 +54,18 @@ public class LED extends SubsystemBase {
 
         for (int i = 0; i < _candle.getMaxSimultaneousAnimationCount(); i++) {
             _candle.clearAnimation(i);
+            _candle.clearStickyFaults();
         }
+        this.setDefaultCommand(Animate(new LarsonAnimation(255, 0, 0, 255, 0.3,
+                _numLed,
+                BounceMode.Front, 6, _ledOffset)));
+        _candle.setLEDs(255, 0, 0);
 
-        this.setDefaultCommand(
-                Animate(new LarsonAnimation(255, 0, 0, 255, 0.3, _numLed, BounceMode.Front, 6, _ledOffset)));
     }
 
     @Override
     public void periodic() {
-
+        System.out.println(_candle.getBusVoltage());
     }
 
     public void setColor(int r, int g, int b) {
