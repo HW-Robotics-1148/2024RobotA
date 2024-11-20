@@ -15,17 +15,22 @@ import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.LarsonAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Core.FieldData;
 
 public class LED extends SubsystemBase {
     private static LED _LED;
 
-    private CANdle _candle;
+    public CANdle _candle;
 
     private final int _ledOffset = 0;
-    private final int _numLed = 300;
+    private final int _numLed = 25 + 8;
+    public int redColor;
+    public int blueColor;
+    private int counter = 0;
 
     public static LED get() {
         if (_LED == null) {
@@ -36,16 +41,16 @@ public class LED extends SubsystemBase {
     }
 
     private LED() {
-        _candle = new CANdle(30, "drive");
+        _candle = new CANdle(3, "drive");
         _candle.configFactoryDefault();
 
         CANdleConfiguration _candleConfiguration = new CANdleConfiguration(); // Only
         // here because phoenix v5 shitty
 
-        _candleConfiguration.statusLedOffWhenActive = true;
+        _candleConfiguration.statusLedOffWhenActive = false;
         _candleConfiguration.disableWhenLOS = false;
         _candleConfiguration.stripType = LEDStripType.RGB;
-        _candleConfiguration.brightnessScalar = 1.0;
+        _candleConfiguration.brightnessScalar = 0.5;
         _candleConfiguration.vBatOutputMode = VBatOutputMode.On;
         _candleConfiguration.enableOptimizations = true;
         _candleConfiguration.v5Enabled = true;
@@ -56,16 +61,14 @@ public class LED extends SubsystemBase {
             _candle.clearAnimation(i);
             _candle.clearStickyFaults();
         }
-        this.setDefaultCommand(Animate(new LarsonAnimation(255, 0, 0, 255, 0.3,
-                _numLed,
-                BounceMode.Front, 6, _ledOffset)));
-        _candle.setLEDs(255, 0, 0);
+        redColor = (FieldData.getIsRed() ? 255 : 0);
+        blueColor = (FieldData.getIsRed() ? 0 : 255);
 
     }
 
     @Override
     public void periodic() {
-        System.out.println(_candle.getBusVoltage());
+
     }
 
     public void setColor(int r, int g, int b) {

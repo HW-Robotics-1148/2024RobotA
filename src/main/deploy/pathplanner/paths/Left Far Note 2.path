@@ -103,9 +103,9 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.15,
-    "maxAcceleration": 3.9,
-    "maxAngularVelocity": 640.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.7,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
@@ -114,7 +114,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Left Far Note",
+  "folder": null,
   "previewStartingState": {
     "rotation": 60.80251395393553,
     "velocity": 0

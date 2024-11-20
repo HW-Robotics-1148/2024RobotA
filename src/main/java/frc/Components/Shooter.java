@@ -2,6 +2,7 @@ package frc.Components;
 
 import javax.naming.InitialContext;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +23,15 @@ public class Shooter extends SubsystemBase {
 
     boolean isSpinning = false;
     boolean isSpinningReverse = false;
+    boolean isPassing = false;
+
+    public boolean isPassing() {
+        return isPassing;
+    }
+
+    public void setPassing(boolean isPassing) {
+        this.isPassing = isPassing;
+    }
 
     public Shooter(TalonFX left, TalonFX right) {
         kP = 0.17;
@@ -105,6 +115,15 @@ public class Shooter extends SubsystemBase {
     }
 
     public void periodic() {
+        if (!DriverStation.isAutonomous()) {
+            if (isPassing) {
+                vel = 61;
+            } else {
+                vel = 80;
+            }
+        } else {
+            vel = 75;
+        }
 
         if (isSpinning || isSpinningReverse) {
             // adds the output of the controller to the predicted
@@ -123,12 +142,13 @@ public class Shooter extends SubsystemBase {
             // right.getRawMotor().setControl(new MotionMagicVelocityVoltage(0.0));
         }
         SmartDashboard.putNumber("Shooter RPM", left.getVelocity());
+        SmartDashboard.putBoolean("Is Passing", isPassing);
         SmartDashboard.putBoolean("Is Shooter Spinning", isSpinning);
         con = new PWIDController(new PWIDConstant(kP, kD, kI, 0.6));
         kP = SmartDashboard.getNumber("Shooter P Constant", kP);
         kI = SmartDashboard.getNumber("Shooter I Constant", kI);
         kD = SmartDashboard.getNumber("Shooter D Constant", kD);
-
+        isPassing = SmartDashboard.getBoolean("Is Passing", false);
     }
     /*
      * kP = 0.22;

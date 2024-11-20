@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -62,18 +63,22 @@ public class RobotContainer {
     private final POVButton moveElevatorDownRaw = new POVButton(joystick, 180);
     private final POVButton moveElevatorUpRaw = new POVButton(joystick, 0);
     private final JoystickButton climbDownHard = new JoystickButton(joystick, 3);
-    private final JoystickButton moveToClimb = new JoystickButton(joystick, 5);
-    private final JoystickButton stretchElevator = new JoystickButton(joystick, 6);
+    private final JoystickButton moveToClimb = new JoystickButton(joystick, 6);
+    private final JoystickButton stretchElevator = new JoystickButton(joystick, 5);
     private final JoystickButton intakeSlow = new JoystickButton(joystick, 12);
     private final JoystickButton outTakeSlow = new JoystickButton(joystick, 10);
     private final JoystickButton spinShooterOperator = new JoystickButton(joystick, Joystick.ButtonType.kTrigger.value);
     private final JoystickButton driverIsFOC = new JoystickButton(driver, PS4Controller.Button.kCircle.value);
+    private final JoystickButton trapJoystickButton = new JoystickButton(joystick, 2);
+    private final JoystickButton passButton = new JoystickButton(driver, PS4Controller.Button.kCircle.value);
+    private final JoystickButton operatorPassButton = new JoystickButton(joystick, 11);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        LED.get().Color(255, 0, 0);
+        LED.get();
+        // LED.get().Color(255, 0, 0);
         s_Swerve.setDefaultCommand(
                 new TeleopSwerve(
                         s_Swerve,
@@ -93,14 +98,21 @@ public class RobotContainer {
         // Configure the button bindings
         // System.out.println("im here");
         configureButtonBindings();
-
-        Shuffleboard.getTab("SmartDashboard").add("Auto Chooser", Constants.AutoConstants.getAutoSelector());
         SmartDashboard.putBoolean("Field-Oriented Control", true);
-        SmartDashboard.putBoolean("Limelight Status", true);
+        SmartDashboard.putBoolean("Auto Aim", false);
+        Shuffleboard.getTab("SmartDashboard").add("Auto Chooser", Constants.AutoConstants.getAutoSelector());
+        SmartDashboard.putBoolean("Limelight Status", Constants.AutoConstants.isLimelightStatus());
         SmartDashboard.putData("Reset FOC", new Command() {
             @Override
             public void initialize() {
                 s_Swerve.zeroHeading();
+            }
+        });
+        SmartDashboard.putData("Flip FOC", new Command() {
+            @Override
+            public void initialize() {
+                s_Swerve.setGyroYaw(
+                        new Rotation2d(estimator.getEstimatedPose().getRotation().getRadians() + 2 * Math.PI));
             }
         });
 
@@ -130,7 +142,7 @@ public class RobotContainer {
         ;
         moveElevatorDownRaw.whileTrue(new Command() {
             public void execute() {
-                elevator.moveRaw(-0.2 * 360);
+                elevator.moveRaw(-0.3 * 360);
             }
         }).onFalse(new Command() {
             public void execute() {
@@ -140,7 +152,7 @@ public class RobotContainer {
         moveElevatorUpRaw.whileTrue(new Command() {
             @Override
             public void execute() {
-                elevator.moveRaw(0.2 * 360);
+                elevator.moveRaw(0.3 * 360);
             }
         }).onFalse(new Command() {
             @Override
@@ -183,7 +195,7 @@ public class RobotContainer {
                 elevator.moveDown();
         }));
 
-        moveToClimb.onTrue(new InstantCommand(() -> elevator.moveToClimb()));
+        moveToClimb.onTrue(new InstantCommand(() -> elevator.moveUp()));
         climbDownHard.onTrue(new InstantCommand(() -> elevator.climbDown()));
         stretchElevator.onTrue(new InstantCommand(() -> elevator.stretch()));
         outTakeButton.onTrue(new InstantCommand(() -> {
@@ -216,6 +228,26 @@ public class RobotContainer {
                 shooter.toggleSpinning();
             }
         }));
+        passButton.onTrue(new InstantCommand(() -> {
+            shooter.setPassing(!shooter.isPassing());
+        }));
+        operatorPassButton.onTrue(new InstantCommand(() -> {
+            shooter.setPassing(!shooter.isPassing());
+        }));
+        spinShooterOperator.onTrue(new InstantCommand(() -> {
+            if (elevator.isDown()) {
+                shooter.toggleSpinning();
+                if (shooter.isSpinning()) {
+                    carriage.prepShot();
+                    autoAim.setIsAutoAimOn(true);
+                } else {
+                    carriage.unPrepShot();
+                    autoAim.setIsAutoAimOn(false);
+                }
+            } else if (shooter.isSpinning()) {
+                shooter.toggleSpinning();
+            }
+        }));
         // spinShooterOperator.onTrue(new InstantCommand(() -> {
         // if (elevator.isDown()) {
         // shooter.toggleSpinning();
@@ -231,13 +263,19 @@ public class RobotContainer {
         fireButton.onTrue(new InstantCommand(() -> {
             if (shooter.isSpinning() && elevator.isDown()) {
                 carriage.shoot();
+            } else if (elevator.isStretched) {
+                carriage.outtakeSlow();
             } else if (elevator.zero.get() || elevator.isDown()) {
                 carriage.outTake();
             }
         })).onFalse(new InstantCommand(() -> {
             carriage.stop();
         }));
-
+        trapJoystickButton.onTrue(new InstantCommand(() -> {
+            carriage.outTake();
+        })).onFalse(new InstantCommand(() -> {
+            carriage.stop();
+        }));
     }
 
     /**

@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Components.Carriage;
 import frc.Components.Elevator;
 import frc.Components.Shooter;
@@ -123,11 +124,14 @@ public final class Constants {
                         public static final int canCoderID = 23; // Left Front Encoder CAN ID, assuming it acts as the
                                                                  // canCoder for
                                                                  // this module
-                        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(135.96679); // Adjusted to
-                                                                                                        // match the
-                                                                                                        // left
-                                                                                                        // front encoder
-                                                                                                        // offset
+                        public static final Rotation2d angleOffset = Rotation2d.fromRotations(0.392578); // Adjusted
+                                                                                                         // to
+                                                                                                         // match
+                                                                                                         // the
+                                                                                                         // left
+                                                                                                         // front
+                                                                                                         // encoder
+                                                                                                         // offset
                         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                                         angleMotorID,
                                         canCoderID, angleOffset);
@@ -139,11 +143,14 @@ public final class Constants {
                         public static final int canCoderID = 24; // Right Front Encoder CAN ID, assuming it acts as the
                                                                  // canCoder for
                                                                  // this module
-                        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(-9.66796); // Adjusted to
-                                                                                                       // match the
-                                                                                                       // right front
-                                                                                                       // encoder
-                                                                                                       // offset
+                        public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.028076); // Adjusted
+                                                                                                          // to
+                                                                                                          // match
+                                                                                                          // the
+                                                                                                          // right
+                                                                                                          // front
+                                                                                                          // encoder
+                                                                                                          // offset
                         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                                         angleMotorID,
                                         canCoderID, angleOffset);
@@ -155,10 +162,14 @@ public final class Constants {
                         public static final int canCoderID = 22; // Left Back Encoder CAN ID, assuming it acts as the
                                                                  // canCoder for
                                                                  // this module
-                        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(46.64843); // Adjusted to
-                                                                                                       // match the
-                                                                                                       // left back
-                                                                                                       // encoder offset
+                        public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.375977 - 0.5); // Adjusted
+                                                                                                                // to
+                                                                                                                // match
+                                                                                                                // the
+                                                                                                                // left
+                                                                                                                // back
+                                                                                                                // encoder
+                                                                                                                // offset
                         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                                         angleMotorID,
                                         canCoderID, angleOffset);
@@ -170,11 +181,14 @@ public final class Constants {
                         public static final int canCoderID = 21; // Right Back Encoder CAN ID, assuming it acts as the
                                                                  // canCoder for
                                                                  // this module
-                        public static final Rotation2d angleOffset = Rotation2d.fromDegrees(99.93164); // Adjusted to
-                                                                                                       // match the
-                                                                                                       // right
-                                                                                                       // back encoder
-                                                                                                       // offset
+                        public static final Rotation2d angleOffset = Rotation2d.fromRotations(-0.226318 - 0.5); // Adjusted
+                                                                                                                // to
+                                                                                                                // match
+                                                                                                                // the
+                                                                                                                // right
+                                                                                                                // back
+                                                                                                                // encoder
+                                                                                                                // offset
                         public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID,
                                         angleMotorID,
                                         canCoderID, angleOffset);
@@ -184,12 +198,12 @@ public final class Constants {
         public static final class AutoConstants { // TODO: The below constants are used in the example auto, and must be
                                                   // tuned to specific robot
 
-                private static PIDConstants translationConstants = new PIDConstants(9.1, 0.008, 0.06);
-                private static PIDConstants rotationConstants = new PIDConstants(10.9, 0, 0.07);
+                private static PIDConstants translationConstants = new PIDConstants(9.5, 0.008, 0.05);
+                private static PIDConstants rotationConstants = new PIDConstants(10.9, 0, 0.06);
                 private static ReplanningConfig replanningConfig = new ReplanningConfig();
                 private static PDConstant autoAimPDConstants = new PDConstant(0.6, 0.0);
                 private static SendableChooser<String> autoChooser = new SendableChooser<String>();
-                private static boolean limelightStatus = true;
+                private static boolean limelightStatus = false;
 
                 public static boolean isLimelightStatus() {
                         return limelightStatus;
@@ -210,6 +224,10 @@ public final class Constants {
                         autoChooser.addOption("Commit Arson", "Commit Arson");
                         autoChooser.addOption("Shoot Preload", "Shoot Preload");
                         autoChooser.addOption("Left Notes", "Left Notes" + (FieldData.getIsRed() ? " Red" : " Blue"));
+                        autoChooser.addOption("4 Note Auton",
+                                        "4 Note Auton" + (FieldData.getIsRed() ? " Red" : " Blue"));
+                        autoChooser.addOption("5 Note Long Auton",
+                                        "5 Note Long Auton" + (FieldData.getIsRed() ? " Red" : " Blue"));
                 }
 
                 public static PathPlannerAuto getAutonToRun() {

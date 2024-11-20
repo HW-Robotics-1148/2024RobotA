@@ -11,6 +11,7 @@ public class Elevator extends SubsystemBase {
     TalonFX left;
     TalonFX right;
     public BinarySensor zero;
+    public boolean isStretched = false;
 
     public Elevator(TalonFX left, TalonFX right, MotionController constant, BinarySensor zero) {
         this.left = left;
@@ -79,8 +80,8 @@ public class Elevator extends SubsystemBase {
 
     public void stretch() {
         target = null;
-        left.setVoltage(1);
-        right.setVoltage(1);
+        left.setVoltage(2);
+        right.setVoltage(2);
     }
 
     public void manualControl(boolean goDown, boolean JoystickMoving) {
@@ -119,6 +120,7 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         if (target != null) {
+            isStretched = false;
             target = Math.max(Math.min(target, upHeight), downHeight);
             var goingDown = target <= 0;
             final var height = getHeight() + 0;
@@ -138,6 +140,8 @@ public class Elevator extends SubsystemBase {
                 left.setVelocity(vel);
                 right.setVelocity(vel);
             }
+        } else {
+            isStretched = true;
         }
     }
 }

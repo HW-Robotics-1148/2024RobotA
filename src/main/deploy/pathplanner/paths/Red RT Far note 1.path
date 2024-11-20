@@ -77,9 +77,9 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.8,
-    "maxAcceleration": 4.8,
-    "maxAngularVelocity": 720.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.7,
+    "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
@@ -88,10 +88,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Red RT Far note",
+  "folder": null,
   "previewStartingState": {
     "rotation": -59.036243467926475,
     "velocity": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

@@ -111,6 +111,10 @@ public class Swerve extends SubsystemBase {
         setModuleStates(states);
     }
 
+    public void setGyroYaw(Rotation2d yaw) {
+        gyro.setYaw(yaw.getDegrees());
+    }
+
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (SwerveModule mod : mSwerveMods) {
@@ -147,6 +151,7 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.updateValues();
         if (DriverStation.isDisabled() && PathPlannerAuto
                 .getStaringPoseFromAutoFile(Constants.AutoConstants.getAutoSelector().getSelected()) != startPos) {
             startPos = PathPlannerAuto

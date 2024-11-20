@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Vision;
 
+import java.util.concurrent.locks.Condition;
+
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.VecBuilder;
@@ -54,6 +56,7 @@ public class PoseEstimator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Constants.AutoConstants.setLimelightStatus(SmartDashboard.getBoolean("Limelight Status", false));
     updateOdometryEstimate();
 
     cam.updateEstimator(drivetrain.getGyroYaw().getDegrees(), poseEstimator, () -> {
